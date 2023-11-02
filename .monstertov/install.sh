@@ -16,7 +16,7 @@ sudo snap install core
 curl -fsSL https://raw.githubusercontent.com/Astranno/googlr/master/Install%20Scripts/install.sh | sudo sh
 
 # bashtop tool
-sudo snap install bashtop
+#sudo snap install bashtop
 
 # vscode requirements
 sudo apt install software-properties-common apt-transport-https wget
