@@ -1,5 +1,4 @@
 # install my default sysadmin/dev packages
-
 # Requirements: apt
 
 
@@ -7,7 +6,7 @@
 sudo apt update
 
 # package list
-sudo apt install curl neofetch nmap snapd tmux wireshark python3 python3-pip lolcat htop proxychains4 python3-full git
+sudo apt install curl neofetch nmap snapd tmux wireshark python3 python3-pip lolcat htop proxychains4 python3-full git -y
 
 # install snapd core
 sudo snap install core
