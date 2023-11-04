@@ -6,7 +6,7 @@
 sudo apt update
 
 # package list
-sudo apt install curl neofetch nmap snapd tmux wireshark python3 python3-pip lolcat htop proxychains4 python3-full git tree davfs2 cifs-utils -y
+sudo apt install curl neofetch nmap snapd tmux wireshark python3 python3-pip lolcat htop proxychains4 python3-full git tree davfs2 cifs-utils ufw tightvncserver -y
 
 # install snapd core
 sudo snap install core
@@ -19,3 +19,7 @@ sudo snap install core
 
 # vscode requirements
 sudo apt install software-properties-common apt-transport-https wget
+
+
+# setup ufw
+sudo ufw allow 22
