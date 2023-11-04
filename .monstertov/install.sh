@@ -12,7 +12,7 @@ sudo apt install curl neofetch nmap snapd tmux wireshark python3 python3-pip lol
 sudo snap install core
 
 # googlr tool https://github.com/Astranno/googlr
-curl -fsSL https://raw.githubusercontent.com/Astranno/googlr/master/Install%20Scripts/install.sh | sudo sh
+#curl -fsSL https://raw.githubusercontent.com/Astranno/googlr/master/Install%20Scripts/install.sh | sudo sh
 
 # bashtop tool
 #sudo snap install bashtop
