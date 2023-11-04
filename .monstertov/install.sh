@@ -6,7 +6,7 @@
 sudo apt update
 
 # package list
-sudo apt install curl neofetch nmap snapd tmux wireshark python3 python3-pip lolcat htop proxychains4 python3-full git -y
+sudo apt install curl neofetch nmap snapd tmux wireshark python3 python3-pip lolcat htop proxychains4 python3-full git tree davfs2 cifs-utils -y
 
 # install snapd core
 sudo snap install core
