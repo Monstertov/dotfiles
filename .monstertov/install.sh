@@ -18,7 +18,7 @@ sudo snap install core
 #sudo snap install bashtop
 
 # vscode requirements
-sudo apt install software-properties-common apt-transport-https wget
+sudo apt install software-properties-common apt-transport-https wget -y
 
 
 # setup ufw
@@ -27,4 +27,6 @@ sudo ufw allow 22
 # install anydesk
 wget -qO - https://keys.anydesk.com/repos/DEB-GPG-KEY | apt-key add - 
 sudo apt-get update
-sudo apt-get install anydesk 
+sudo apt-get install anydesk -y
+
+sudo apt autoremove -y
