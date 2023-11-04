@@ -23,3 +23,8 @@ sudo apt install software-properties-common apt-transport-https wget
 
 # setup ufw
 sudo ufw allow 22
+
+# install anydesk
+wget -qO - https://keys.anydesk.com/repos/DEB-GPG-KEY | apt-key add - 
+sudo apt-get update
+sudo apt-get install anydesk 
