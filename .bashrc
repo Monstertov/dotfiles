@@ -57,7 +57,6 @@ fi
 
 PS1="\[\e[34m\]\u@\h:\[\e[97m\][\w]\[\e[34m\]\$\[\e[0m\] "
 
-
 alias neofetch="neofetch --ascii ~/.config/neofetch/ascii_fuck"
 
 clear && neofetch
