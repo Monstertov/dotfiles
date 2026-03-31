@@ -39,7 +39,7 @@ alias egrep='egrep --color=auto'
 alias claudeskip="claude --dangerously-skip-permissions"
 alias sudoclaudeskip="sudo claude --dangerously-skip-permissions"
 alias sudo='sudo '
-alias code='code --user-data-dir="$HOME/.vscode-root" --no-sandbox'
+alias sudocode='sudo code --user-data-dir="$HOME/.vscode-root" --no-sandbox'
 alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
 alias tmuxa='tmux attach-session -t'
 
