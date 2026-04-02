@@ -13,11 +13,27 @@ success() { echo -e "${GREEN}✓ $*${RESET}"; }
 warn()    { echo -e "${RED}! $*${RESET}"; }
 abort()   { echo -e "\n${RED}${BOLD}ABORT: $*${RESET}\n" >&2; exit 1; }
 
+# ── Parse arguments ───────────────────────────────────────────────────────
+FORCE=false
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --force) FORCE=true; shift ;;
+    *) abort "Unknown argument: $1" ;;
+  esac
+done
+
 # ── Already installed check ────────────────────────────────────────────────
 if [[ -f "$HOME/.zshrc" && ! -L "$HOME/.zshrc" ]]; then
-  abort "~/.zshrc already exists. Remove it first if you want to reinstall:
+  if [[ "$FORCE" == false ]]; then
+    abort "~/.zshrc already exists. Remove it first if you want to reinstall:
   rm ~/.zshrc
-  (a backup is a good idea: cp ~/.zshrc ~/.zshrc.bak)"
+  (a backup is a good idea: cp ~/.zshrc ~/.zshrc.bak)
+
+Or use --force to overwrite:"
+  else
+    warn "~/.zshrc exists, backing up to ~/.zshrc.bak..."
+    cp "$HOME/.zshrc" "$HOME/.zshrc.bak"
+  fi
 fi
 
 # ── Self-bootstrap: clone repo if files not present ───────────────────────
