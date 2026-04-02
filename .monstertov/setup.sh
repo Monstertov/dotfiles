@@ -175,6 +175,20 @@ if [[ -f "$DOTFILES_DIR/.monstertov/claude-hud-config.json" ]]; then
   success "claude-hud config installed → ~/.claude/plugins/claude-hud/config.json"
 fi
 
+# ── Screen auto-rotation (KDE + GNOME) ─────────────────────────────────────
+info "Configuring screen auto-rotation for convertible displays..."
+if [[ "$XDG_CURRENT_DESKTOP" == *"KDE"* || "$DESKTOP_SESSION" == *"plasma"* ]]; then
+  # KDE/Plasma
+  kwriteconfig6 --file kscreenrc --group General --key AutoRotation "true" 2>/dev/null || true
+  success "Auto-rotation enabled for KDE"
+elif [[ "$XDG_CURRENT_DESKTOP" == *"GNOME"* || "$DESKTOP_SESSION" == *"gnome"* ]]; then
+  # GNOME
+  gsettings set org.gnome.settings-daemon.peripherals.touchscreen orientation-lock false 2>/dev/null || true
+  success "Auto-rotation enabled for GNOME"
+else
+  success "Desktop environment not detected (auto-rotation can be enabled manually later)"
+fi
+
 # ── Default shell → zsh ───────────────────────────────────────────────────
 ZSH_PATH="$(command -v zsh)"
 CURRENT_SHELL="$(getent passwd "$USER" | cut -d: -f7)"
