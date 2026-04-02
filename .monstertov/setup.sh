@@ -75,17 +75,8 @@ fi
 # ── APT dependencies ──────────────────────────────────────────────────────
 info "Installing system packages..."
 sudo apt update -qq
-sudo apt install -y zsh tmux git curl xclip wl-clipboard command-not-found
+sudo apt install -y zsh tmux git curl xclip wl-clipboard command-not-found zoxide
 success "System packages installed"
-
-# ── zoxide ────────────────────────────────────────────────────────────────
-if ! command -v zoxide &>/dev/null; then
-  info "Installing zoxide..."
-  curl -sSfL https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | sh
-  success "zoxide installed"
-else
-  success "zoxide already installed"
-fi
 
 # ── Oh My Zsh ─────────────────────────────────────────────────────────────
 if [[ ! -d "$HOME/.oh-my-zsh" ]]; then
