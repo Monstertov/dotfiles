@@ -73,10 +73,19 @@ if ! command -v apt &>/dev/null; then
 fi
 
 # ── APT dependencies ──────────────────────────────────────────────────────
-info "Installing system packages..."
-sudo apt update -qq
-sudo apt install -y zsh tmux git curl xclip wl-clipboard command-not-found zoxide
-success "System packages installed"
+missing_pkgs=()
+for cmd in zsh tmux git curl xclip wl-clipboard zoxide; do
+  command -v "$cmd" &>/dev/null || missing_pkgs+=("$cmd")
+done
+
+if (( ${#missing_pkgs[@]} > 0 )); then
+  info "Installing system packages: ${missing_pkgs[*]}..."
+  sudo apt update -qq
+  sudo apt install -y "${missing_pkgs[@]}" command-not-found
+  success "System packages installed"
+else
+  success "All system packages already installed"
+fi
 
 # ── Oh My Zsh ─────────────────────────────────────────────────────────────
 if [[ ! -d "$HOME/.oh-my-zsh" ]]; then
