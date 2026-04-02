@@ -2,13 +2,47 @@
 # setup.sh — bootstrap monstertov's shell environment on a fresh system
 set -euo pipefail
 
-DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+GITHUB_DOTFILES="https://github.com/Monstertov/dotfiles"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+DOTFILES_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 # ── Colors ────────────────────────────────────────────────────────────────
 RED='\033[0;31m'; GREEN='\033[0;32m'; CYAN='\033[0;36m'; BOLD='\033[1m'; RESET='\033[0m'
 info()    { echo -e "${CYAN}${BOLD}==> $*${RESET}"; }
 success() { echo -e "${GREEN}✓ $*${RESET}"; }
-warn()    { echo -e "${RED}✗ $*${RESET}"; }
+warn()    { echo -e "${RED}! $*${RESET}"; }
+abort()   { echo -e "\n${RED}${BOLD}ABORT: $*${RESET}\n" >&2; exit 1; }
+
+# ── Already installed check ────────────────────────────────────────────────
+if [[ -f "$HOME/.zshrc" && ! -L "$HOME/.zshrc" ]]; then
+  abort "~/.zshrc already exists. Remove it first if you want to reinstall:
+  rm ~/.zshrc
+  (a backup is a good idea: cp ~/.zshrc ~/.zshrc.bak)"
+fi
+
+# ── Self-bootstrap: clone repo if files not present ───────────────────────
+if [[ ! -f "$DOTFILES_DIR/.monstertov/.zshrc" ]]; then
+  info "Dotfiles not found at $DOTFILES_DIR — cloning from GitHub..."
+  DOTFILES_DIR="$HOME/.dotfiles"
+  if [[ -d "$DOTFILES_DIR/.git" ]]; then
+    info "~/.dotfiles already exists, pulling latest..."
+    git -C "$DOTFILES_DIR" pull --ff-only || warn "Pull failed, using existing clone"
+  else
+    git clone "$GITHUB_DOTFILES" "$DOTFILES_DIR"
+  fi
+  success "Dotfiles ready at $DOTFILES_DIR"
+fi
+
+# ── Verify all required files ─────────────────────────────────────────────
+missing=()
+for f in ".monstertov/.zshrc" ".monstertov/sharp.zsh-theme" ".tmux.conf"; do
+  [[ -f "$DOTFILES_DIR/$f" ]] || missing+=("$DOTFILES_DIR/$f")
+done
+if (( ${#missing[@]} > 0 )); then
+  echo -e "${RED}${BOLD}ABORT: Required files missing:${RESET}" >&2
+  for f in "${missing[@]}"; do echo "  $f" >&2; done
+  exit 1
+fi
 
 # ── Package manager check ──────────────────────────────────────────────────
 if ! command -v apt &>/dev/null; then
@@ -62,8 +96,8 @@ install_plugin() {
   fi
 }
 
-install_plugin zsh-autosuggestions     https://github.com/zsh-users/zsh-autosuggestions
-install_plugin zsh-syntax-highlighting https://github.com/zsh-users/zsh-syntax-highlighting
+install_plugin zsh-autosuggestions      https://github.com/zsh-users/zsh-autosuggestions
+install_plugin zsh-syntax-highlighting  https://github.com/zsh-users/zsh-syntax-highlighting
 install_plugin history-substring-search https://github.com/zsh-users/zsh-history-substring-search
 
 # ── Sharp theme ───────────────────────────────────────────────────────────
@@ -72,35 +106,31 @@ cp "$DOTFILES_DIR/.monstertov/sharp.zsh-theme" "$OMZ_CUSTOM/themes/sharp.zsh-the
 success "sharp theme installed"
 
 # ── .zshrc ────────────────────────────────────────────────────────────────
-info "Linking .zshrc..."
-if [[ -f "$HOME/.zshrc" && ! -L "$HOME/.zshrc" ]]; then
-  cp "$HOME/.zshrc" "$HOME/.zshrc.bak.$(date +%Y%m%d%H%M%S)"
-  echo "  (backed up existing .zshrc)"
-fi
+info "Installing .zshrc..."
 cp "$DOTFILES_DIR/.monstertov/.zshrc" "$HOME/.zshrc"
-success ".zshrc installed"
+success ".zshrc installed → ~/.zshrc"
 
 # ── .tmux.conf ────────────────────────────────────────────────────────────
-info "Linking .tmux.conf..."
+info "Installing .tmux.conf..."
 if [[ -f "$HOME/.tmux.conf" && ! -L "$HOME/.tmux.conf" ]]; then
-  cp "$HOME/.tmux.conf" "$HOME/.tmux.conf.bak.$(date +%Y%m%d%H%M%S)"
-  echo "  (backed up existing .tmux.conf)"
+  warn ".tmux.conf already exists — skipping (remove ~/.tmux.conf to reinstall)"
+else
+  cp "$DOTFILES_DIR/.tmux.conf" "$HOME/.tmux.conf"
+  success ".tmux.conf installed → ~/.tmux.conf"
 fi
-cp "$DOTFILES_DIR/.tmux.conf" "$HOME/.tmux.conf"
-success ".tmux.conf installed"
 
-# ── Claude HUD config ─────────────────────────────────────────────────────
-info "Installing claude-hud config..."
-mkdir -p "$HOME/.claude/plugins/claude-hud"
-cp "$DOTFILES_DIR/.monstertov/claude-hud-config.json" "$HOME/.claude/plugins/claude-hud/config.json"
-success "claude-hud config installed"
+# ── .dircolors (bright blue folders for better visibility) ──────────────
+if [[ -f "$DOTFILES_DIR/.monstertov/.dircolors" ]]; then
+  info "Installing .dircolors..."
+  cp "$DOTFILES_DIR/.monstertov/.dircolors" "$HOME/.dircolors"
+  success ".dircolors installed → ~/.dircolors"
+fi
 
-# ── claude-hud statusLine in Claude Code settings ─────────────────────────
+# ── Claude Code statusLine (claude-hud) ───────────────────────────────────
 CLAUDE_SETTINGS="$HOME/.claude/settings.json"
 if [[ -f "$CLAUDE_SETTINGS" ]]; then
   if ! grep -q "claude-hud" "$CLAUDE_SETTINGS"; then
     info "Adding claude-hud statusLine to Claude Code settings..."
-    # Insert statusLine before the last closing brace using python (no jq needed)
     python3 - "$CLAUDE_SETTINGS" <<'PYEOF'
 import json, sys
 path = sys.argv[1]
@@ -119,6 +149,14 @@ PYEOF
   fi
 else
   warn "~/.claude/settings.json not found — install Claude Code first, then re-run to add the HUD"
+fi
+
+# ── Claude HUD config ─────────────────────────────────────────────────────
+if [[ -f "$DOTFILES_DIR/.monstertov/claude-hud-config.json" ]]; then
+  info "Installing claude-hud config..."
+  mkdir -p "$HOME/.claude/plugins/claude-hud"
+  cp "$DOTFILES_DIR/.monstertov/claude-hud-config.json" "$HOME/.claude/plugins/claude-hud/config.json"
+  success "claude-hud config installed → ~/.claude/plugins/claude-hud/config.json"
 fi
 
 # ── Default shell → zsh ───────────────────────────────────────────────────
