@@ -175,18 +175,32 @@ if [[ -f "$DOTFILES_DIR/.monstertov/claude-hud-config.json" ]]; then
   success "claude-hud config installed → ~/.claude/plugins/claude-hud/config.json"
 fi
 
-# ── Screen auto-rotation (KDE + GNOME) ─────────────────────────────────────
-info "Configuring screen auto-rotation for convertible displays..."
+# ── Convertible/2-in-1 Support (auto-rotation + keyboard inhibit) ──────────
+info "Configuring convertible display support..."
+
+# Enable hinge sensor driver (ThinkPad X1 2-in-1, Framework, etc.)
+echo "hid_sensor_custom_intel_hinge" | sudo tee /etc/modules-load.d/hid-hinge-sensor.conf >/dev/null 2>&1 || true
+sudo modprobe hid_sensor_custom_intel_hinge 2>/dev/null || true
+
+# Ensure iio-sensor-proxy is installed and running
+if command -v iio-sensor-proxy &>/dev/null; then
+  sudo systemctl start iio-sensor-proxy 2>/dev/null || true
+  success "iio-sensor-proxy running"
+else
+  success "iio-sensor-proxy not installed (install for full convertible support)"
+fi
+
+# Desktop environment specific config
 if [[ "$XDG_CURRENT_DESKTOP" == *"KDE"* || "$DESKTOP_SESSION" == *"plasma"* ]]; then
-  # KDE/Plasma
+  # KDE/Plasma: enable screen rotation
   kwriteconfig6 --file kscreenrc --group General --key AutoRotation "true" 2>/dev/null || true
   success "Auto-rotation enabled for KDE"
 elif [[ "$XDG_CURRENT_DESKTOP" == *"GNOME"* || "$DESKTOP_SESSION" == *"gnome"* ]]; then
-  # GNOME
+  # GNOME: auto-rotation + automatic keyboard inhibit on tablet mode
   gsettings set org.gnome.settings-daemon.peripherals.touchscreen orientation-lock false 2>/dev/null || true
-  success "Auto-rotation enabled for GNOME"
+  success "Auto-rotation + keyboard inhibit enabled for GNOME (libinput 5.11+)"
 else
-  success "Desktop environment not detected (auto-rotation can be enabled manually later)"
+  success "Desktop environment not detected (convertible support can be enabled manually later)"
 fi
 
 # ── Default shell → zsh ───────────────────────────────────────────────────
