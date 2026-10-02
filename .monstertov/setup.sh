@@ -1,0 +1,161 @@
+#!/usr/bin/env bash
+# setup.sh — bootstrap monstertov's shell environment on a fresh system
+set -euo pipefail
+
+GITHUB_DOTFILES="https://github.com/Monstertov/dotfiles"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+DOTFILES_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+
+# ── Colors ────────────────────────────────────────────────────────────────
+RED='\033[0;31m'; GREEN='\033[0;32m'; CYAN='\033[0;36m'; BOLD='\033[1m'; RESET='\033[0m'
+info()    { echo -e "${CYAN}${BOLD}==> $*${RESET}"; }
+success() { echo -e "${GREEN}✓ $*${RESET}"; }
+warn()    { echo -e "${RED}! $*${RESET}"; }
+abort()   { echo -e "\n${RED}${BOLD}ABORT: $*${RESET}\n" >&2; exit 1; }
+
+# ── Parse arguments ───────────────────────────────────────────────────────
+FORCE=false
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --force) FORCE=true; shift ;;
+    *) abort "Unknown argument: $1" ;;
+  esac
+done
+
+# ── Already installed check ────────────────────────────────────────────────
+if [[ -f "$HOME/.zshrc" && ! -L "$HOME/.zshrc" ]]; then
+  if [[ "$FORCE" == false ]]; then
+    abort "~/.zshrc already exists. Remove it first if you want to reinstall:
+  rm ~/.zshrc
+  (a backup is a good idea: cp ~/.zshrc ~/.zshrc.bak)
+
+Or use --force to overwrite:"
+  else
+    warn "~/.zshrc exists, backing up to ~/.zshrc.bak..."
+    cp "$HOME/.zshrc" "$HOME/.zshrc.bak"
+  fi
+fi
+
+# ── Self-bootstrap: clone repo if files not present ───────────────────────
+if [[ ! -f "$DOTFILES_DIR/.monstertov/.zshrc" ]]; then
+  info "Dotfiles not found at $DOTFILES_DIR — cloning from GitHub..."
+  DOTFILES_DIR="$HOME/.dotfiles"
+  if [[ -d "$DOTFILES_DIR/.git" ]]; then
+    info "~/.dotfiles already exists, pulling latest..."
+    git -C "$DOTFILES_DIR" pull --ff-only || warn "Pull failed, using existing clone"
+  else
+    git clone "$GITHUB_DOTFILES" "$DOTFILES_DIR"
+  fi
+  success "Dotfiles ready at $DOTFILES_DIR"
+fi
+
+# ── Verify all required files ─────────────────────────────────────────────
+missing=()
+for f in ".monstertov/.zshrc" ".monstertov/sharp.zsh-theme" ".tmux.conf"; do
+  [[ -f "$DOTFILES_DIR/$f" ]] || missing+=("$DOTFILES_DIR/$f")
+done
+if (( ${#missing[@]} > 0 )); then
+  echo -e "${RED}${BOLD}ABORT: Required files missing:${RESET}" >&2
+  for f in "${missing[@]}"; do echo "  $f" >&2; done
+  exit 1
+fi
+
+# ── Package manager check ──────────────────────────────────────────────────
+if ! command -v apt &>/dev/null; then
+  warn "apt not found. This script targets Debian/Ubuntu systems."
+  echo ""
+  echo "Install these packages manually with your package manager, then re-run:"
+  echo "  zsh tmux git curl xclip wl-clipboard"
+  echo ""
+  echo "Also install zoxide from: https://github.com/ajeetdsouza/zoxide"
+  echo "  (cargo install zoxide  OR  your distro's package)"
+  exit 1
+fi
+
+# ── APT dependencies ──────────────────────────────────────────────────────
+missing_pkgs=()
+for cmd in zsh tmux git curl xclip wl-clipboard zoxide; do
+  command -v "$cmd" &>/dev/null || missing_pkgs+=("$cmd")
+done
+
+if (( ${#missing_pkgs[@]} > 0 )); then
+  info "Installing system packages: ${missing_pkgs[*]}..."
+  sudo apt update -qq
+  sudo apt install -y "${missing_pkgs[@]}" command-not-found
+  success "System packages installed"
+else
+  success "All system packages already installed"
+fi
+
+# ── Oh My Zsh ─────────────────────────────────────────────────────────────
+if [[ ! -d "$HOME/.oh-my-zsh" ]]; then
+  info "Installing Oh My Zsh..."
+  RUNZSH=no CHSH=no sh -c \
+    "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+  success "Oh My Zsh installed"
+else
+  success "Oh My Zsh already installed"
+fi
+
+OMZ_CUSTOM="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
+
+# ── OMZ plugins ───────────────────────────────────────────────────────────
+install_plugin() {
+  local name="$1" repo="$2"
+  local dest="$OMZ_CUSTOM/plugins/$name"
+  if [[ ! -d "$dest" ]]; then
+    info "Installing plugin: $name"
+    git clone --depth=1 "$repo" "$dest"
+    success "$name installed"
+  else
+    success "$name already installed"
+  fi
+}
+
+install_plugin zsh-autosuggestions      https://github.com/zsh-users/zsh-autosuggestions
+install_plugin zsh-syntax-highlighting  https://github.com/zsh-users/zsh-syntax-highlighting
+install_plugin history-substring-search https://github.com/zsh-users/zsh-history-substring-search
+
+# ── Sharp theme ───────────────────────────────────────────────────────────
+info "Installing sharp theme..."
+cp "$DOTFILES_DIR/.monstertov/sharp.zsh-theme" "$OMZ_CUSTOM/themes/sharp.zsh-theme"
+success "sharp theme installed"
+
+# ── .zshrc ────────────────────────────────────────────────────────────────
+info "Installing .zshrc..."
+cp "$DOTFILES_DIR/.monstertov/.zshrc" "$HOME/.zshrc"
+success ".zshrc installed → ~/.zshrc"
+
+# ── .tmux.conf ────────────────────────────────────────────────────────────
+info "Installing .tmux.conf..."
+if [[ -f "$HOME/.tmux.conf" && ! -L "$HOME/.tmux.conf" ]]; then
+  warn ".tmux.conf already exists — skipping (remove ~/.tmux.conf to reinstall)"
+else
+  cp "$DOTFILES_DIR/.tmux.conf" "$HOME/.tmux.conf"
+  success ".tmux.conf installed → ~/.tmux.conf"
+fi
+
+# ── .dircolors (bright blue folders for better visibility) ──────────────
+if [[ -f "$DOTFILES_DIR/.monstertov/.dircolors" ]]; then
+  info "Installing .dircolors..."
+  cp "$DOTFILES_DIR/.monstertov/.dircolors" "$HOME/.dircolors"
+  success ".dircolors installed → ~/.dircolors"
+fi
+
+# ── Default shell → zsh ───────────────────────────────────────────────────
+ZSH_PATH="$(command -v zsh)"
+CURRENT_SHELL="$(getent passwd "$USER" | cut -d: -f7)"
+if [[ "$CURRENT_SHELL" != "$ZSH_PATH" ]]; then
+  info "Setting zsh as default shell..."
+  if ! grep -qF "$ZSH_PATH" /etc/shells; then
+    echo "$ZSH_PATH" | sudo tee -a /etc/shells
+  fi
+  chsh -s "$ZSH_PATH"
+  success "Default shell set to zsh (takes effect on next login)"
+else
+  success "zsh is already the default shell"
+fi
+
+# ── Done ──────────────────────────────────────────────────────────────────
+echo ""
+echo -e "${CYAN}${BOLD}All done! Open a new terminal (or run: exec zsh)${RESET}"
