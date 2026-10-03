@@ -25,6 +25,9 @@ Run `.monstertov/setup.sh` on a fresh system to get the full environment.
 - Clickable links (OSC 8) passed through to your terminal, tmux 3.4+
 - Vi copy mode
 
+**Readline (bash, python REPL, etc.)**
+- Ctrl+Backspace deletes the previous word (Windows Terminal sends it as `^H`)
+
 **Claude Code**: not set up here. The status line, plugins and global instructions come from
 [monstertov-claude-hud](https://github.com/Monstertov/monstertov-claude-hud) (`bash install.sh` there).
 
@@ -37,5 +40,6 @@ Run `.monstertov/setup.sh` on a fresh system to get the full environment.
 | `.monstertov/.zshrc` | `~/.zshrc` |
 | `.monstertov/sharp.zsh-theme` | `~/.oh-my-zsh/custom/themes/sharp.zsh-theme` |
 | `.tmux.conf` | `~/.tmux.conf` |
+| `.inputrc` | `~/.inputrc` |
 
 Existing files are backed up with a timestamp before being replaced.

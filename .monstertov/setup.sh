@@ -135,6 +135,15 @@ else
   success ".tmux.conf installed → ~/.tmux.conf"
 fi
 
+# ── .inputrc (Ctrl+Backspace deletes a word in bash/readline) ────────────
+info "Installing .inputrc..."
+if [[ -f "$HOME/.inputrc" && ! -L "$HOME/.inputrc" ]]; then
+  warn ".inputrc already exists — skipping (remove ~/.inputrc to reinstall)"
+else
+  cp "$DOTFILES_DIR/.inputrc" "$HOME/.inputrc"
+  success ".inputrc installed → ~/.inputrc"
+fi
+
 # ── .dircolors (bright blue folders for better visibility) ──────────────
 if [[ -f "$DOTFILES_DIR/.monstertov/.dircolors" ]]; then
   info "Installing .dircolors..."

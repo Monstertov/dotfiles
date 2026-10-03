@@ -1,0 +1,8 @@
+# install: curl -fLo ~/.inputrc https://raw.githubusercontent.com/Monstertov/dotfiles/main/.inputrc
+
+# keep the distro defaults (a user ~/.inputrc replaces /etc/inputrc otherwise)
+$include /etc/inputrc
+
+# Ctrl+Backspace deletes the previous word. Windows Terminal sends it as ^H,
+# which readline maps to delete-one-char by default.
+"\C-h": backward-kill-word
