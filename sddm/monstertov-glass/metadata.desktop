@@ -1,0 +1,9 @@
+[SddmGreeterTheme]
+Name=monstertov glass
+Description=Glassy login in the monstertov cyan and blue
+Type=sddm-theme
+MainScript=Main.qml
+ConfigFile=theme.conf
+Theme-Id=monstertov-glass
+Theme-API=2.0
+QtVersion=6

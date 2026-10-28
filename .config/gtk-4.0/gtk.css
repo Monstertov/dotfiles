@@ -1,0 +1,19 @@
+/* Monstertov - https://tov.monster/ */
+/* monstertov glass: gtk accent in the tov.monster blues */
+@define-color accent_color #65b9f0;
+@define-color accent_bg_color #0071bc;
+@define-color accent_fg_color #ffffff;
+@define-color window_bg_color #141414;
+@define-color view_bg_color #1c1c1c;
+@define-color headerbar_bg_color #1c1c1c;
+@define-color popover_bg_color #1c1c1c;
+@define-color card_bg_color #1f1f1f;
+
+menu, .menu, .context-menu {
+    background-color: rgba(20, 20, 20, 0.92);
+    border: 1px solid rgba(0, 113, 188, 0.5);
+    border-radius: 10px;
+    padding: 4px;
+}
+menu menuitem { border-radius: 6px; padding: 6px 10px; }
+menu menuitem:hover { background-color: rgba(0, 113, 188, 0.5); color: #ffffff; }

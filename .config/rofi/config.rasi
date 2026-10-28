@@ -1,0 +1,59 @@
+/* Monstertov - https://tov.monster/ */
+/* monstertov glass: rofi */
+configuration {
+    modi: "drun,run,window";
+    show-icons: true;
+    drun-display-format: "{name}";
+    display-drun: "󰍉";
+    display-run: "󰆍";
+    display-window: "󰖲";
+}
+
+* {
+    font: "JetBrainsMono Nerd Font 12";
+    light: #65b9f0;
+    deep: #0071bc;
+    muted: #b4b4b4;
+    background-color: transparent;
+    text-color: #ffffff;
+}
+
+window {
+    width: 560px;
+    background-color: rgba(20, 20, 20, 0.55);
+    border: 2px;
+    border-color: rgba(0, 113, 188, 0.6);
+    border-radius: 16px;
+    padding: 18px;
+}
+
+mainbox { spacing: 14px; children: [ inputbar, listview ]; }
+
+inputbar {
+    padding: 10px 14px;
+    border-radius: 11px;
+    background-color: rgba(255, 255, 255, 0.06);
+    children: [ prompt, entry ];
+    spacing: 10px;
+}
+
+prompt { text-color: @light; }
+entry { placeholder: "search"; placeholder-color: @muted; }
+
+listview { lines: 8; columns: 1; spacing: 4px; scrollbar: false; }
+
+element { padding: 8px 12px; border-radius: 10px; spacing: 12px; }
+element-icon { size: 22px; background-color: transparent; }
+element-text { vertical-align: 0.5; background-color: transparent; text-color: inherit; highlight: bold #65b9f0; }
+element normal.normal, element alternate.normal, element normal.active, element alternate.active {
+    background-color: transparent;
+    text-color: #e6e6e6;
+}
+element selected.normal, element selected.active {
+    background-color: rgba(0, 113, 188, 0.45);
+    text-color: #ffffff;
+    border: 0 0 0 3px;
+    border-color: @light;
+}
+entry, prompt, textbox { background-color: transparent; }
+entry { text-color: #ffffff; }

@@ -1,0 +1,85 @@
+/* Monstertov - https://tov.monster/ */
+/* monstertov glass: waybar */
+@define-color light  #65b9f0;
+@define-color deep   #0071bc;
+@define-color bright #b4dafa;
+@define-color muted  #b4b4b4;
+@define-color red    #e06c75;
+
+* {
+    font-family: "JetBrainsMono Nerd Font";
+    font-size: 13px;
+    border: none;
+    min-height: 0;
+}
+
+window#waybar {
+    background: rgba(20, 20, 20, 0.45);
+    border: 1px solid rgba(0, 113, 188, 0.35);
+    border-radius: 14px;
+    color: #ffffff;
+}
+
+tooltip {
+    background: rgba(20, 20, 20, 0.85);
+    border: 1px solid @deep;
+    border-radius: 10px;
+}
+
+#workspaces { margin-left: 6px; }
+
+#workspaces button {
+    padding: 0 9px;
+    margin: 5px 2px;
+    color: @muted;
+    background: transparent;
+    border-radius: 9px;
+}
+
+#workspaces button.active {
+    color: #ffffff;
+    background: linear-gradient(45deg, rgba(0, 113, 188, 0.75), rgba(101, 185, 240, 0.55));
+}
+
+#workspaces button:hover { background: rgba(255, 255, 255, 0.08); }
+
+#window { color: @muted; padding: 0 10px; }
+
+#clock { color: @light; font-weight: bold; }
+
+#tray, #pulseaudio, #bluetooth, #network, #battery, #custom-notifications {
+    padding: 0 10px;
+    margin: 5px 0;
+    border-radius: 9px;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* launcher and power: the two ends of the bar */
+#custom-launcher, #custom-power {
+    padding: 0 12px;
+    margin: 5px 6px;
+    border-radius: 9px;
+    font-size: 15px;
+    color: @light;
+    background: rgba(255, 255, 255, 0.05);
+}
+#custom-launcher:hover { background: rgba(0, 113, 188, 0.3); }
+#custom-power:hover { color: #ffffff; background: rgba(224, 108, 117, 0.45); }
+
+/* window controls: quiet until hovered */
+#window-controls { margin: 5px 0; }
+#custom-win-float, #custom-win-full, #custom-win-close {
+    padding: 0 8px;
+    color: @muted;
+    border-radius: 8px;
+}
+#custom-win-float:hover, #custom-win-full:hover { color: #ffffff; background: rgba(0, 113, 188, 0.45); }
+#custom-win-close:hover { color: #ffffff; background: rgba(224, 108, 117, 0.45); }
+#waybar.empty #window-controls { opacity: 0; }
+
+#pulseaudio, #network { color: @light; }
+#bluetooth { color: @bright; }
+#pulseaudio.muted, #network.disconnected { color: @muted; }
+#battery.charging { color: @light; }
+#battery.warning:not(.charging) { color: #e5c07b; }
+#battery.critical:not(.charging) { color: @red; }

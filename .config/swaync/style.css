@@ -1,0 +1,34 @@
+/* Monstertov - https://tov.monster/ */
+/* monstertov glass: notifications */
+* { font-family: "JetBrainsMono Nerd Font"; }
+
+.notification-row { outline: none; }
+
+.control-center {
+    background: rgba(20, 20, 20, 0.88);
+    border: 1px solid rgba(0, 113, 188, 0.45);
+    border-radius: 14px;
+    color: #ffffff;
+}
+
+.notification {
+    background: rgba(28, 28, 28, 0.9);
+    border: 1px solid rgba(0, 113, 188, 0.45);
+    border-radius: 14px;
+    color: #ffffff;
+}
+
+.notification-content .summary { color: #65b9f0; font-weight: bold; }
+.notification-content .body { color: #d0d0d0; }
+
+.control-center .widget-title > button,
+.notification-action {
+    background: rgba(0, 113, 188, 0.35);
+    border-radius: 9px;
+    color: #ffffff;
+}
+
+.widget-dnd > switch:checked { background: #65b9f0; }
+
+.control-center .notification { background: rgba(255, 255, 255, 0.05); border-color: rgba(0, 113, 188, 0.3); }
+.notification-content .body, .control-center label { color: #e6e6e6; }
