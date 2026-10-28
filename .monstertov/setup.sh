@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# setup.sh — bootstrap monstertov's shell environment on a fresh system
+# setup.sh: bootstrap monstertov's shell environment on a fresh system
 set -euo pipefail
 
 GITHUB_DOTFILES="https://github.com/Monstertov/dotfiles"
@@ -23,6 +23,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 # ── Already installed check ────────────────────────────────────────────────
+ZSHRC_BACKED_UP=false
 if [[ -f "$HOME/.zshrc" && ! -L "$HOME/.zshrc" ]]; then
   if [[ "$FORCE" == false ]]; then
     abort "~/.zshrc already exists. Remove it first if you want to reinstall:
@@ -33,12 +34,13 @@ Or use --force to overwrite:"
   else
     warn "~/.zshrc exists, backing up to ~/.zshrc.bak..."
     cp "$HOME/.zshrc" "$HOME/.zshrc.bak"
+    ZSHRC_BACKED_UP=true
   fi
 fi
 
 # ── Self-bootstrap: clone repo if files not present ───────────────────────
 if [[ ! -f "$DOTFILES_DIR/.monstertov/.zshrc" ]]; then
-  info "Dotfiles not found at $DOTFILES_DIR — cloning from GitHub..."
+  info "Dotfiles not found at $DOTFILES_DIR, cloning from GitHub..."
   DOTFILES_DIR="$HOME/.dotfiles"
   if [[ -d "$DOTFILES_DIR/.git" ]]; then
     info "~/.dotfiles already exists, pulling latest..."
@@ -65,23 +67,28 @@ if ! command -v apt &>/dev/null; then
   warn "apt not found. This script targets Debian/Ubuntu systems."
   echo ""
   echo "Install these packages manually with your package manager, then re-run:"
-  echo "  zsh tmux git curl xclip wl-clipboard"
+  echo "  zsh tmux git fzf xclip wl-clipboard"
   echo ""
   echo "Also install zoxide from: https://github.com/ajeetdsouza/zoxide"
   echo "  (cargo install zoxide  OR  your distro's package)"
   exit 1
 fi
 
-# ── APT dependencies ──────────────────────────────────────────────────────
+# ── APT dependencies (command it provides : package) ──────────────────────
 missing_pkgs=()
-for cmd in zsh tmux git curl xclip wl-clipboard zoxide; do
-  command -v "$cmd" &>/dev/null || missing_pkgs+=("$cmd")
+for pair in zsh:zsh tmux:tmux git:git fzf:fzf zoxide:zoxide xclip:xclip wl-copy:wl-clipboard \
+            /usr/lib/command-not-found:command-not-found; do
+  command -v "${pair%%:*}" &>/dev/null || missing_pkgs+=("${pair#*:}")
 done
 
 if (( ${#missing_pkgs[@]} > 0 )); then
   info "Installing system packages: ${missing_pkgs[*]}..."
-  sudo apt update -qq
-  sudo apt install -y "${missing_pkgs[@]}" command-not-found
+  sudo apt-get update -qq
+  sudo apt-get install -y "${missing_pkgs[@]}"
+  # command-not-found only learns which package has which command on the next update
+  if [[ " ${missing_pkgs[*]} " == *" command-not-found "* ]]; then
+    sudo apt-get update -qq
+  fi
   success "System packages installed"
 else
   success "All system packages already installed"
@@ -90,8 +97,8 @@ fi
 # ── Oh My Zsh ─────────────────────────────────────────────────────────────
 if [[ ! -d "$HOME/.oh-my-zsh" ]]; then
   info "Installing Oh My Zsh..."
-  RUNZSH=no CHSH=no sh -c \
-    "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+  # a plain clone, which is what its installer does too, without piping a script into sh
+  git clone --depth=1 https://github.com/ohmyzsh/ohmyzsh.git "$HOME/.oh-my-zsh"
   success "Oh My Zsh installed"
 else
   success "Oh My Zsh already installed"
@@ -114,7 +121,7 @@ install_plugin() {
 
 install_plugin zsh-autosuggestions      https://github.com/zsh-users/zsh-autosuggestions
 install_plugin zsh-syntax-highlighting  https://github.com/zsh-users/zsh-syntax-highlighting
-install_plugin history-substring-search https://github.com/zsh-users/zsh-history-substring-search
+# history-substring-search comes with Oh My Zsh
 
 # ── Sharp theme ───────────────────────────────────────────────────────────
 info "Installing sharp theme..."
@@ -124,12 +131,38 @@ success "sharp theme installed"
 # ── .zshrc ────────────────────────────────────────────────────────────────
 info "Installing .zshrc..."
 cp "$DOTFILES_DIR/.monstertov/.zshrc" "$HOME/.zshrc"
+# keep the monstertov-ai-hud block of the replaced .zshrc (the HUD would add it back on its next update)
+if [[ "$ZSHRC_BACKED_UP" == true ]]; then
+  hud_block=$(sed -n '/^# >>> monstertov-ai-hud >>>$/,/^# <<< monstertov-ai-hud <<<$/p' "$HOME/.zshrc.bak")
+  [[ -n "$hud_block" ]] && printf '\n%s\n' "$hud_block" >> "$HOME/.zshrc"
+fi
 success ".zshrc installed → ~/.zshrc"
+
+# ── .zprofile (login shells read ~/.profile for PATH, like bash) ─────────
+if [[ -f "$HOME/.zprofile" ]]; then
+  warn ".zprofile already exists, skipping (remove ~/.zprofile to reinstall)"
+else
+  cp "$DOTFILES_DIR/.monstertov/.zprofile" "$HOME/.zprofile"
+  success ".zprofile installed → ~/.zprofile"
+fi
+
+# ── zsh history: start from the bash history, so suggestions and fuzzy search have something ──
+if [[ ! -f "$HOME/.zsh_history" && -s "$HOME/.bash_history" ]]; then
+  info "Importing bash history into zsh..."
+  HISTFILE="$HOME/.zsh_history" HISTSIZE=50000 SAVEHIST=50000 \
+    zsh -f -i -c 'setopt extended_history; fc -R ~/.bash_history; fc -W' </dev/null >/dev/null 2>&1 || true
+  if [[ -f "$HOME/.zsh_history" ]]; then
+    chmod 600 "$HOME/.zsh_history"
+    success "bash history imported → ~/.zsh_history"
+  else
+    warn "bash history import failed, zsh starts with an empty history"
+  fi
+fi
 
 # ── .tmux.conf ────────────────────────────────────────────────────────────
 info "Installing .tmux.conf..."
 if [[ -f "$HOME/.tmux.conf" && ! -L "$HOME/.tmux.conf" ]]; then
-  warn ".tmux.conf already exists — skipping (remove ~/.tmux.conf to reinstall)"
+  warn ".tmux.conf already exists, skipping (remove ~/.tmux.conf to reinstall)"
 else
   cp "$DOTFILES_DIR/.tmux.conf" "$HOME/.tmux.conf"
   success ".tmux.conf installed → ~/.tmux.conf"
@@ -138,7 +171,7 @@ fi
 # ── .inputrc (Ctrl+Backspace deletes a word in bash/readline) ────────────
 info "Installing .inputrc..."
 if [[ -f "$HOME/.inputrc" && ! -L "$HOME/.inputrc" ]]; then
-  warn ".inputrc already exists — skipping (remove ~/.inputrc to reinstall)"
+  warn ".inputrc already exists, skipping (remove ~/.inputrc to reinstall)"
 else
   cp "$DOTFILES_DIR/.inputrc" "$HOME/.inputrc"
   success ".inputrc installed → ~/.inputrc"
