@@ -147,6 +147,8 @@ hl.gesture({
 ---- KEYS ----
 -- every bind gets a desc so Super + / (rofi/keys.sh) can search them
 hl.bind(mainMod .. " + Return",    hl.dsp.exec_cmd(terminal),    { desc = "open terminal" })
+-- the copilot key sends super + shift + f23; claude is a zsh function, so run it in an interactive zsh
+hl.bind(mainMod .. " + SHIFT + F23", hl.dsp.exec_cmd(terminal .. " --directory ~/development zsh -ic 'claude; exec zsh'"), { desc = "open claude code (copilot key)" })
 hl.bind(mainMod .. " + Q",         hl.dsp.window.close(),        { desc = "close window" })
 hl.bind(mainMod .. " + E",         hl.dsp.exec_cmd(fileManager), { desc = "open file manager" })
 hl.bind(mainMod .. " + Space",     hl.dsp.exec_cmd(menu),        { desc = "app launcher" })
