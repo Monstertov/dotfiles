@@ -22,13 +22,16 @@ hl.on("hyprland.start", function()
     hl.exec_cmd("hypridle")
     hl.exec_cmd("nm-applet --indicator")
     hl.exec_cmd("udiskie --tray")
+    hl.exec_cmd("pypr")
     hl.exec_cmd("systemctl --user start hyprpolkitagent")
     hl.exec_cmd("wl-paste --type text --watch cliphist store")
     hl.exec_cmd("wl-paste --type image --watch cliphist store")
 end)
 
 ---- ENV ----
+hl.env("XCURSOR_THEME", "Bibata-Modern-Classic")
 hl.env("XCURSOR_SIZE", "24")
+hl.env("HYPRCURSOR_THEME", "Bibata-Modern-Classic")
 hl.env("HYPRCURSOR_SIZE", "24")
 hl.env("QT_QPA_PLATFORM", "wayland;xcb")
 hl.env("ELECTRON_OZONE_PLATFORM_HINT", "auto")
@@ -177,6 +180,7 @@ for i = 1, 10 do
     hl.bind(mainMod .. " + SHIFT + " .. key, hl.dsp.window.move({ workspace = i }), { desc = "move window to workspace " .. i })
 end
 
+hl.bind(mainMod .. " + grave",     hl.dsp.exec_cmd("pypr toggle term"),                 { desc = "dropdown terminal" })
 hl.bind(mainMod .. " + S",         hl.dsp.workspace.toggle_special("magic"),            { desc = "show or hide scratchpad" })
 hl.bind(mainMod .. " + SHIFT + S", hl.dsp.window.move({ workspace = "special:magic" }), { desc = "move window to scratchpad" })
 hl.bind(mainMod .. " + mouse_down", hl.dsp.focus({ workspace = "e+1" }), { desc = "next workspace (scroll)" })

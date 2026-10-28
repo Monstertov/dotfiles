@@ -1,0 +1,12 @@
+# Monstertov - https://tov.monster/
+# pyprland: dropdown terminal
+
+[pyprland]
+plugins = ["scratchpads"]
+
+[scratchpads.term]
+animation = "fromTop"
+command = "kitty --class kitty-dropterm"
+class = "kitty-dropterm"
+size = "75% 60%"
+margin = 50
