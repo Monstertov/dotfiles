@@ -72,7 +72,7 @@ hl.config({
 
     animations = { enabled = true },
 
-    dwindle = { preserve_split = true },
+    dwindle = { preserve_split = true, force_split = 2 }, -- new windows always go right or below
 
     misc = {
         force_default_wallpaper = 0,
@@ -112,6 +112,37 @@ hl.gesture({ fingers = 3, direction = "horizontal", action = "workspace" })
 -- three-finger up: fullscreen; four-finger swipe: drag the window under the cursor
 hl.gesture({ fingers = 3, direction = "up",    action = "fullscreen" })
 hl.gesture({ fingers = 4, direction = "swipe", action = "move" })
+
+-- two-finger pinch zooms the focused app: font size in kitty, ctrl +/- everywhere else.
+-- hyprland eats the pinch, so browsers get their keyboard zoom instead of smooth zoom.
+-- scale is a ratio from 1.0, so steps use log(scale / start) to make in and out symmetric
+local pinch_step = math.log(1.15)
+local pinch_done = 0
+local pinch_base = 1
+local function pinch_zoom(e)
+    if not e.scale or e.scale <= 0 then return end
+    local r = math.log(e.scale / pinch_base) / pinch_step
+    local target = r >= 0 and math.floor(r) or -math.floor(-r)
+    if target == pinch_done then return end
+    local win = hl.get_active_window()
+    local mods = (win and win.class == "kitty") and "CTRL SHIFT" or "CTRL"
+    local key = target > pinch_done and "equal" or "minus"
+    for _ = 1, math.abs(target - pinch_done) do
+        hl.dispatch(hl.dsp.send_shortcut({ mods = mods, key = key }))
+    end
+    pinch_done = target
+end
+hl.gesture({
+    fingers = 2,
+    direction = "pinch",
+    action = {
+        start = function(e)
+            pinch_done = 0
+            pinch_base = (e.scale and e.scale > 0) and e.scale or 1
+        end,
+        update = pinch_zoom,
+    },
+})
 
 ---- KEYS ----
 -- every bind gets a desc so Super + / (rofi/keys.sh) can search them
