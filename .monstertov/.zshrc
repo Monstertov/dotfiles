@@ -43,7 +43,7 @@ alias tmuxa='tmux attach-session -t'
 [[ -f ~/.bash_aliases ]] && source ~/.bash_aliases
 
 # ── AUTOSUGGESTIONS ───────────────────────────────────────────────────
-ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#555555"
+ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#8f8f8f"
 
 # subtle syntax highlighting: no loud green/red
 typeset -A ZSH_HIGHLIGHT_STYLES
@@ -56,7 +56,7 @@ ZSH_HIGHLIGHT_STYLES[path]='fg=white'
 ZSH_HIGHLIGHT_STYLES[single-quoted-argument]='fg=#e5c07b'
 ZSH_HIGHLIGHT_STYLES[double-quoted-argument]='fg=#e5c07b'
 ZSH_HIGHLIGHT_STYLES[option]='fg=white'
-ZSH_HIGHLIGHT_STYLES[comment]='fg=#555555'
+ZSH_HIGHLIGHT_STYLES[comment]='fg=#9a9a9a'
 ZSH_AUTOSUGGEST_STRATEGY=(history completion)
 bindkey '→' autosuggest-accept
 bindkey '^[[C' autosuggest-accept   # right arrow fallback
@@ -80,7 +80,7 @@ if command -v fzf >/dev/null; then
   fi
 fi
 # sharp theme colours: white text, cyan matches and accents, grey for the quiet parts
-export FZF_DEFAULT_OPTS="--color=fg:white,bg:-1,hl:cyan,fg+:white:bold,bg+:237,hl+:cyan:bold,info:242,prompt:cyan,pointer:cyan,marker:cyan,spinner:cyan,header:242,border:242,gutter:-1"
+export FZF_DEFAULT_OPTS="--color=fg:white,bg:-1,hl:117,fg+:white:bold,bg+:24,hl+:117:bold,info:252,prompt:75,pointer:75,marker:75,spinner:75,header:252,border:245,gutter:-1"
 
 # ── KEYS ──────────────────────────────────────────────────────────────
 # Ctrl+Backspace deletes the previous word (Windows Terminal sends ^H), same as ~/.inputrc for bash
