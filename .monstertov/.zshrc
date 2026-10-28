@@ -79,6 +79,8 @@ if command -v fzf >/dev/null; then
     for f in /usr/share/doc/fzf/examples/{key-bindings,completion}.zsh; do [[ -r $f ]] && source $f; done
   fi
 fi
+# sharp theme colours: white text, cyan matches and accents, grey for the quiet parts
+export FZF_DEFAULT_OPTS="--color=fg:white,bg:-1,hl:cyan,fg+:white:bold,bg+:237,hl+:cyan:bold,info:242,prompt:cyan,pointer:cyan,marker:cyan,spinner:cyan,header:242,border:242,gutter:-1"
 
 # ── KEYS ──────────────────────────────────────────────────────────────
 # Ctrl+Backspace deletes the previous word (Windows Terminal sends ^H), same as ~/.inputrc for bash
