@@ -18,6 +18,9 @@
         "clock"
     ],
     "modules-right": [
+        "mpris",
+        "privacy",
+        "custom/weather",
         "tray",
         "pulseaudio",
         "bluetooth",
@@ -77,6 +80,30 @@
                 "today": "<span color='#65b9f0'><b>{}</b></span>"
             }
         }
+    },
+    "mpris": {
+        "format": "{status_icon} {dynamic}",
+        "format-paused": "{status_icon} <i>{dynamic}</i>",
+        "dynamic-order": ["artist", "title"],
+        "dynamic-len": 35,
+        "status-icons": {
+            "playing": "󰐊",
+            "paused": "󰏤"
+        }
+    },
+    "privacy": {
+        "icon-size": 14,
+        "modules": [
+            { "type": "screenshare", "tooltip": true },
+            { "type": "audio-in", "tooltip": true }
+        ]
+    },
+    "custom/weather": {
+        "format": "󰖐 {}",
+        "exec": "curl -sf --max-time 10 'https://wttr.in/?format=%t|%C' | jq -Rc 'split(\"|\") | {text: .[0], tooltip: .[1]}'",
+        "return-type": "json",
+        "interval": 1800,
+        "on-click": "kitty --hold sh -c 'curl -s https://wttr.in'"
     },
     "tray": {
         "spacing": 8

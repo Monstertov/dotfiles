@@ -47,7 +47,7 @@ tooltip {
 
 #clock { color: @light; font-weight: bold; }
 
-#tray, #pulseaudio, #bluetooth, #network, #battery, #custom-notifications {
+#mpris, #privacy, #custom-weather, #tray, #pulseaudio, #bluetooth, #network, #battery, #custom-notifications {
     padding: 0 10px;
     margin: 5px 0;
     border-radius: 9px;
