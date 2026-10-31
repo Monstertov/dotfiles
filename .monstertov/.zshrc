@@ -24,10 +24,18 @@ bindkey '^[[A' history-substring-search-up
 export PATH="$HOME/.npm-global/bin:$HOME/.local/bin:$PATH"
 
 # ── ALIASES ───────────────────────────────────────────────────────────
-alias ls='ls --color=auto'
-alias ll='ls -alF'
-alias la='ls -A'
-alias l='ls -CF'
+if command -v eza >/dev/null 2>&1; then
+  alias ls='eza --icons=auto --group-directories-first'
+  alias ll='eza -alh --icons=auto --group-directories-first --git'
+  alias la='eza -a --icons=auto --group-directories-first'
+  alias l='eza --icons=auto --group-directories-first'
+  alias lt='eza --tree --level=2 --icons=auto'
+else
+  alias ls='ls --color=auto'
+  alias ll='ls -alF'
+  alias la='ls -A'
+  alias l='ls -CF'
+fi
 alias grep='grep --color=auto'
 alias fgrep='fgrep --color=auto'
 alias egrep='egrep --color=auto'
@@ -37,6 +45,8 @@ alias sudo='sudo '
 alias sudocode='sudo code --user-data-dir="$HOME/.vscode-root" --no-sandbox'
 alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
 alias tmuxa='tmux attach-session -t'
+# in kitty, use kitten ssh so remote terminfo works (fixes garbled line editing)
+[[ -n "$KITTY_WINDOW_ID" ]] && alias ssh='kitten ssh'
 
 
 # load ~/.bash_aliases if it exists
