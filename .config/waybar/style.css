@@ -47,15 +47,15 @@ tooltip {
 
 #clock { color: @light; font-weight: bold; }
 
-#mpris, #privacy, #custom-weather, #tray, #pulseaudio, #bluetooth, #network, #battery, #custom-notifications {
+#mpris, #privacy, #tray, #pulseaudio, #bluetooth, #network, #battery, #custom-notifications {
     padding: 0 10px;
     margin: 5px 0;
     border-radius: 9px;
     background: rgba(255, 255, 255, 0.05);
 }
 
-/* launcher and power: the two ends of the bar */
-#custom-launcher, #custom-power {
+/* launcher, keybinds and power: the glass pill buttons */
+#custom-launcher, #custom-keybinds, #custom-power {
     padding: 0 12px;
     margin: 5px 6px;
     border-radius: 9px;
@@ -63,7 +63,8 @@ tooltip {
     color: @light;
     background: rgba(255, 255, 255, 0.05);
 }
-#custom-launcher:hover { background: rgba(0, 113, 188, 0.3); }
+#custom-keybinds { margin: 5px 0; }
+#custom-launcher:hover, #custom-keybinds:hover { background: rgba(0, 113, 188, 0.3); }
 #custom-power:hover { color: #ffffff; background: rgba(224, 108, 117, 0.45); }
 
 /* window controls: quiet until hovered */
@@ -76,6 +77,36 @@ tooltip {
 #custom-win-float:hover, #custom-win-full:hover { color: #ffffff; background: rgba(0, 113, 188, 0.45); }
 #custom-win-close:hover { color: #ffffff; background: rgba(224, 108, 117, 0.45); }
 #waybar.empty #window-controls { opacity: 0; }
+
+/* mpris: play/pause icon only, tight padding, pulse while playing */
+#mpris {
+    padding: 0 9px;
+    font-size: 14px;
+    color: @muted;
+}
+#mpris.playing {
+    color: @light;
+    animation: mpris-pulse 2s ease-in-out infinite;
+}
+@keyframes mpris-pulse {
+    0%   { color: @deep; }
+    50%  { color: @bright; }
+    100% { color: @deep; }
+}
+
+/* wallpaper toggle: blue while spinning, muted when paused, red when off */
+#custom-wallpaper {
+    padding: 0 10px;
+    margin: 5px 0;
+    border-radius: 9px;
+    font-size: 14px;
+    background: rgba(255, 255, 255, 0.05);
+    color: @muted;
+}
+#custom-wallpaper.playing { color: @light; }
+#custom-wallpaper.paused { color: @muted; }
+#custom-wallpaper.stopped { color: @red; }
+#custom-wallpaper:hover { background: rgba(0, 113, 188, 0.3); }
 
 #pulseaudio, #network { color: @light; }
 #bluetooth { color: @bright; }

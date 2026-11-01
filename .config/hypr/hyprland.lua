@@ -16,7 +16,7 @@ hl.monitor({ output = "", mode = "preferred", position = "auto", scale = "auto" 
 
 ---- AUTOSTART ----
 hl.on("hyprland.start", function()
-    hl.exec_cmd("hyprpaper")
+    hl.exec_cmd("$HOME/.local/share/monster-wall/monster-wall-start.sh eDP-1")
     hl.exec_cmd("waybar")
     hl.exec_cmd("swaync")
     hl.exec_cmd("hypridle")

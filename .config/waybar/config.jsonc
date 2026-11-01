@@ -10,7 +10,8 @@
     "spacing": 6,
     "modules-left": [
         "custom/launcher",
-        "hyprland/workspaces",
+        "custom/keybinds",
+        "ext/workspaces",
         "hyprland/window",
         "group/window-controls"
     ],
@@ -18,9 +19,9 @@
         "clock"
     ],
     "modules-right": [
+        "custom/wallpaper",
         "mpris",
         "privacy",
-        "custom/weather",
         "tray",
         "pulseaudio",
         "bluetooth",
@@ -33,6 +34,11 @@
         "format": "󰣇",
         "tooltip-format": "apps",
         "on-click": "pkill rofi || rofi -show drun"
+    },
+    "custom/keybinds": {
+        "format": "󰌌",
+        "tooltip-format": "keybinds (Super + /)",
+        "on-click": "pkill rofi || ~/.config/rofi/keys.sh"
     },
     "group/window-controls": {
         "orientation": "horizontal",
@@ -62,8 +68,11 @@
         "tooltip-format": "power",
         "on-click": "pkill rofi || ~/.config/rofi/powermenu.sh"
     },
-    "hyprland/workspaces": {
-        "format": "{id}",
+    // ext/workspaces: waybar 0.15.0 hyprland/workspaces clicks fail on Lua configs (Alexays/Waybar#5198)
+    "ext/workspaces": {
+        "format": "{name}",
+        "on-click": "activate",
+        "sort-by-id": true,
         "on-scroll-up": "hyprctl dispatch 'hl.dsp.focus({workspace = \"e-1\"})'",
         "on-scroll-down": "hyprctl dispatch 'hl.dsp.focus({workspace = \"e+1\"})'"
     },
@@ -81,15 +90,24 @@
             }
         }
     },
+    "custom/wallpaper": {
+        "format": "{}",
+        "return-type": "json",
+        "exec": "$HOME/.local/share/monster-wall/monster-wall-ctl.sh status",
+        "interval": 5,
+        "signal": 8,
+        "on-click": "$HOME/.local/share/monster-wall/monster-wall-ctl.sh toggle"
+    },
     "mpris": {
-        "format": "{status_icon} {dynamic}",
-        "format-paused": "{status_icon} <i>{dynamic}</i>",
+        "format": "{status_icon}",
+        "tooltip-format": "{dynamic}",
         "dynamic-order": ["artist", "title"],
-        "dynamic-len": 35,
+        "dynamic-len": 60,
         "status-icons": {
             "playing": "󰐊",
             "paused": "󰏤"
-        }
+        },
+        "on-click": "playerctl play-pause"
     },
     "privacy": {
         "icon-size": 14,
@@ -97,13 +115,6 @@
             { "type": "screenshare", "tooltip": true },
             { "type": "audio-in", "tooltip": true }
         ]
-    },
-    "custom/weather": {
-        "format": "󰖐 {}",
-        "exec": "curl -sf --max-time 10 'https://wttr.in/?format=%t|%C' | jq -Rc 'split(\"|\") | {text: .[0], tooltip: .[1]}'",
-        "return-type": "json",
-        "interval": 1800,
-        "on-click": "kitty --hold sh -c 'curl -s https://wttr.in'"
     },
     "tray": {
         "spacing": 8
@@ -131,10 +142,10 @@
         "format-off": "󰂲"
     },
     "network": {
-        "format-wifi": "{icon} {signalStrength}%",
+        "format-wifi": "{icon} {signaldBm} dBm",
         "format-ethernet": "󰈀",
         "format-disconnected": "󰤮",
-        "tooltip-format-wifi": "{essid} ({ipaddr})",
+        "tooltip-format-wifi": "{essid} ({ipaddr})\n{signaldBm} dBm · {signalStrength}%",
         "on-click": "pkill rofi || ~/.config/rofi/wifi.sh",
         "on-click-right": "nm-connection-editor",
         "format-icons": [
