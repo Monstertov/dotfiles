@@ -26,10 +26,19 @@
         "pulseaudio",
         "bluetooth",
         "network",
+        "custom/nas",
         "battery",
         "custom/notifications",
         "custom/power"
     ],
+    "custom/nas": {
+        "format": "{}",
+        "return-type": "json",
+        "exec": "$HOME/.config/waybar/scripts/nas.sh status",
+        "interval": 30,
+        "signal": 9,
+        "on-click": "$HOME/.config/waybar/scripts/nas.sh toggle"
+    },
     "custom/launcher": {
         "format": "󰣇",
         "tooltip-format": "apps",
