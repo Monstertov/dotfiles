@@ -4,6 +4,7 @@ ZSH_THEME="sharp"
 
 plugins=(
   git
+  fzf-tab
   zsh-autosuggestions
   zsh-syntax-highlighting
   sudo
@@ -13,12 +14,22 @@ plugins=(
   command-not-found
   tmux
   history-substring-search
+  you-should-use
 )
 
 source $ZSH/oh-my-zsh.sh
 
 # zoxide (z) is set up by its plugin above. Down arrow is bound under KEYS.
 bindkey '^[[A' history-substring-search-up
+
+# ── FZF-TAB ───────────────────────────────────────────────────────────
+# Tab completion opens an fzf picker. Folders get an eza preview when eza exists.
+zstyle ':completion:*' menu no
+zstyle ':completion:*:descriptions' format '[%d]'
+zstyle ':fzf-tab:*' switch-group '<' '>'
+if command -v eza >/dev/null 2>&1; then
+  zstyle ':fzf-tab:complete:(cd|z|__zoxide_z):*' fzf-preview 'eza -1 --color=always --icons=auto $realpath'
+fi
 
 # ── PATH ──────────────────────────────────────────────────────────────
 export PATH="$HOME/.npm-global/bin:$HOME/.local/bin:$PATH"

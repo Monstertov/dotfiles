@@ -121,6 +121,8 @@ install_plugin() {
 
 install_plugin zsh-autosuggestions      https://github.com/zsh-users/zsh-autosuggestions
 install_plugin zsh-syntax-highlighting  https://github.com/zsh-users/zsh-syntax-highlighting
+install_plugin fzf-tab                  https://github.com/Aloxaf/fzf-tab
+install_plugin you-should-use           https://github.com/MichaelAquilina/zsh-you-should-use
 # history-substring-search comes with Oh My Zsh
 
 # ── Sharp theme ───────────────────────────────────────────────────────────
