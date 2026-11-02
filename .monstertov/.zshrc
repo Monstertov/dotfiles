@@ -107,21 +107,7 @@ export FZF_DEFAULT_OPTS="--color=fg:white,bg:-1,hl:117,fg+:white:bold,bg+:24,hl+
 # Ctrl+Backspace deletes the previous word (Windows Terminal sends ^H), same as ~/.inputrc for bash
 bindkey '^H' backward-kill-word
 
-# Tab accepts the grey autosuggestion when one is showing, otherwise completes as usual (fzf's
-# completion when loaded, so **<Tab> keeps working). Left out of autosuggest's widget wrapping,
-# which would clear the suggestion before this widget could see it.
-autosuggest-accept-or-complete() {
-  if [[ -n $POSTDISPLAY ]]; then
-    zle autosuggest-accept
-  elif (( ${+widgets[fzf-completion]} )); then
-    zle fzf-completion
-  else
-    zle expand-or-complete
-  fi
-}
-zle -N autosuggest-accept-or-complete
-ZSH_AUTOSUGGEST_IGNORE_WIDGETS+=(autosuggest-accept-or-complete)
-bindkey '^I' autosuggest-accept-or-complete
+# Tab always completes against what is on disk. Right arrow takes the grey history suggestion.
 
 # Down arrow opens a list of earlier commands matching what is typed (fzf, arrows to pick, Enter puts
 # it on the prompt). While stepping back through matches with Up, Down still steps forward again.
