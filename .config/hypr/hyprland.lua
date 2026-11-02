@@ -183,6 +183,10 @@ for i = 1, 10 do
     hl.bind(mainMod .. " + SHIFT + " .. key, hl.dsp.window.move({ workspace = i }), { desc = "move window to workspace " .. i })
 end
 
+-- move the current workspace to the next monitor
+hl.bind(mainMod .. " + CTRL + left",  hl.dsp.workspace.move({ monitor = "l" }), { desc = "move workspace to left monitor" })
+hl.bind(mainMod .. " + CTRL + right", hl.dsp.workspace.move({ monitor = "r" }), { desc = "move workspace to right monitor" })
+
 hl.bind(mainMod .. " + grave",     hl.dsp.exec_cmd("pypr toggle term"),                 { desc = "dropdown terminal" })
 hl.bind(mainMod .. " + S",         hl.dsp.workspace.toggle_special("magic"),            { desc = "show or hide scratchpad" })
 hl.bind(mainMod .. " + SHIFT + S", hl.dsp.window.move({ workspace = "special:magic" }), { desc = "move window to scratchpad" })
