@@ -13,6 +13,7 @@ local mainMod     = "SUPER"
 
 ---- MONITOR ----
 hl.monitor({ output = "", mode = "preferred", position = "auto", scale = "auto" })
+pcall(dofile, os.getenv("HOME") .. "/.config/hypr/monitors.lua") -- layout from nwg-displays
 
 ---- AUTOSTART ----
 hl.on("hyprland.start", function()
