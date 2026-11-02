@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# Block commits that contain secrets. This repo is public.
+# Bypass a false positive once with: git commit --no-verify
+if ! command -v gitleaks >/dev/null 2>&1; then
+  echo "pre-commit: gitleaks not installed, secret scan skipped" >&2
+  exit 0
+fi
+exec gitleaks git --pre-commit --staged --redact --no-banner

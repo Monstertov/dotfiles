@@ -200,6 +200,12 @@ else
   success "zsh is already the default shell"
 fi
 
+# ── Git hooks ─────────────────────────────────────────────────────────────
+if git -C "$DOTFILES_DIR" rev-parse --git-dir >/dev/null 2>&1; then
+  git -C "$DOTFILES_DIR" config core.hooksPath .githooks
+  success "Dotfiles git hooks enabled"
+fi
+
 # ── Done ──────────────────────────────────────────────────────────────────
 echo ""
 echo -e "${CYAN}${BOLD}All done! Open a new terminal (or run: exec zsh)${RESET}"
