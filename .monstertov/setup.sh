@@ -203,7 +203,11 @@ fi
 # ── Git hooks ─────────────────────────────────────────────────────────────
 if git -C "$DOTFILES_DIR" rev-parse --git-dir >/dev/null 2>&1; then
   git -C "$DOTFILES_DIR" config core.hooksPath .githooks
-  success "Dotfiles git hooks enabled"
+  if command -v gitleaks >/dev/null 2>&1; then
+    success "Dotfiles git hooks enabled"
+  else
+    warn "Dotfiles git hooks enabled, but gitleaks is missing: commits here are blocked until it is installed"
+  fi
 fi
 
 # ── Done ──────────────────────────────────────────────────────────────────
