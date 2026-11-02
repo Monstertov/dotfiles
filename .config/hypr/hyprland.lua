@@ -36,6 +36,7 @@ hl.env("HYPRCURSOR_THEME", "Bibata-Modern-Classic")
 hl.env("HYPRCURSOR_SIZE", "24")
 hl.env("QT_QPA_PLATFORM", "wayland;xcb")
 hl.env("ELECTRON_OZONE_PLATFORM_HINT", "auto")
+hl.env("HYPRSHOT_DIR", os.getenv("HOME") .. "/Downloads/Screenshots")
 
 ---- LOOK ----
 hl.config({
